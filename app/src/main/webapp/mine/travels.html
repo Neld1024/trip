@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的游记</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/js/plugins/bootstrap-4.1.1-dist/css/bootstrap.min.css">
+    <script src="/js/plugins/jquery/jquery.min.js"></script>
+    <script src="/js/plugins/bootstrap-4.1.1-dist/js/bootstrap.min.js"></script>
+    <script src="/js/plugins/jrender/jrender.min.js"></script>
+    <link rel="stylesheet" href="/css/font/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/reset.css"/>
+    <link rel="stylesheet" href="/css/userTravels.css"/>
+    <link rel="stylesheet" href="/js/plugins/dialog2/css/dialog.css"/>
+    <script src="/js/plugins/dialog2/js/dialog.min.js"></script>
+    <script>
+        $(function () {
+            var travels = [];
+
+            var totalPage;
+            var currentPage = 1;
+            function renderTravels() {
+
+                $.get("/travels", {currentPage: currentPage, pageSize:3}, function (pageInfo) {
+                    $.merge(travels,pageInfo.list);
+                    $(".travels").renderValues({list:travels})
+                    currentPage++;
+                    totalPage = pageInfo.pages;
+                })
+            }
+            renderTravels();
+
+
+            $(document).scroll(function () {
+                console.log($(document).scrollTop(), $(document).height(), $(window).height());
+
+                if($(document).scrollTop() + $(window).height() >= $(document).height()){
+                    if(currentPage > totalPage){
+
+                        $(document).dialog({
+                            type : 'notice',
+                            infoText: '已经到底了!',
+                            autoClose: 2500,
+                            position: 'center'  // center: 居中; bottom: 底部
+                        });
+                        return;
+                    }
+                    renderTravels();
+                }
+            })
+        })
+    </script>
+</head>
+
+<body>
+<div class="search-head">
+    <div class="row nav-search">
+        <div class="col">
+            <a href="profiles.html">
+                <span><i class="fa fa-chevron-left"></i></span>
+            </a>
+        </div>
+        <div class="col">
+            <span>我的游记</span>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+
+<div class="container travels">
+    <dl class="list">
+        <dd render-loop="list">
+            <a href="editTravels.html">
+                <img render-src="list.coverUrl">
+                <h6 class="title" render-html="list.title"></h6>
+                <p>最近更新时间 <span render-html="list.lastUpdateTime"></span>
+                    <span class="span-right">
+							  <i class="fa fa-heart"></i><span>0</span>收藏
+						  <i class="fa fa-thumbs-o-up"></i><span>0</span>点赞</span>
+                </p>
+            </a>
+        </dd>
+
+    </dl>
+</div>
+
+</body>
+</html>
