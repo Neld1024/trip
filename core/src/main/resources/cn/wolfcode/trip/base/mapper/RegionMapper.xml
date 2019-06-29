@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.trip.base.mapper.RegionMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.trip.base.domain.Region">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+    </resultMap>
+
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="cn.wolfcode.trip.base.domain.Region"
+            useGeneratedKeys="true">
+        INSERT INTO region (name, parent_id, state)
+        VALUES (#{name,jdbcType=VARCHAR}, #{parent.id,jdbcType=BIGINT}, #{state,jdbcType=INTEGER})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.trip.base.domain.Region">
+        UPDATE region
+        SET name = #{name,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateState">
+        UPDATE region
+        SET state = #{state}
+        WHERE id = #{id}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            parent_id,
+            state
+        FROM region
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+            id,
+            name,
+            parent_id,
+            state
+        FROM region
+    </select>
+    <select id="selectRegionsByParentId" resultType="cn.wolfcode.trip.base.domain.Region">
+        SELECT
+        id,
+        name,
+        parent_id,
+        state
+        FROM region
+        <where>
+            <!--
+                parentId:是从传递进来的对象中获取指定的属性值
+            -->
+            <if test="parentId == null">
+                AND parent_id IS NULL
+            </if>
+            <if test="parentId != null">
+                AND parent_id = #{parentId}
+            </if>
+
+        </where>
+    </select>
+</mapper>
